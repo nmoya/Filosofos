@@ -26,8 +26,9 @@ void * filosofo (int tid)
 		temporizador = rand()%2;
 		sleep(temporizador * TEMPOPAUSA);
 		
-		sem_wait( &palito[tid] );					    //Palito esquerdo
+		sem_wait( &palito[tid] );	 				    //Palito esquerdo
 		sem_wait( &palito[ (tid+1) % MAXTHREADS ] );    //Palito direito
+		
 		
 		sem_wait(&mutex);
 		alimentados+=1;

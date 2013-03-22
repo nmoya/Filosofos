@@ -1,12 +1,16 @@
 package pckThread;
 import java.util.Random;
 
+
 public class MThread implements Runnable 
 {
 	private int id;
 
 	private static int nFilosofos = 5;
-	static int[] Garfos = new int[nFilosofos];
+	
+	//Instancia o vetor global de garfos e o sem‡foro
+	static Garfos Garfos = new Garfos(nFilosofos);
+	Bakery semaforo = new Bakery(nFilosofos);
 
 	public MThread(int id) 
 	{
@@ -16,33 +20,82 @@ public class MThread implements Runnable
 	public void run() 
 	{
 		Random randint = new Random(42);
-		Bakery semaforo = new Bakery(nFilosofos);
 		int count = 0;
 		int posGarfo = 0;
-		System.out.println("MyThread starting.");
+		this.info("iniciado");
 		try 
 		{
-			do
+			while(count <= 100)
 			{
-				posGarfo = randint.nextInt()%nFilosofos;
-				Thread.sleep(randint.nextInt()%500);
-				if (randint.nextInt()%2 == 0)
+				//Regi‹o Cr’tica para pegar os garfos
+				this.semaforo.lock(this.getID());
+				if (this.Garfos.getGarfo(posGarfo) == -1 && this.Garfos.getGarfo((posGarfo+1)%nFilosofos) == -1)
 				{
-					Garfos[posGarfo] = 1;
-					System.out.println("Thread " + this.getID() + "pegou o garfo na pos " + posGarfo);
-				}
+					//Pega um garfo para voc
+					this.Garfos.setGarfo(posGarfo, this.getID()); 
+					this.Garfos.setGarfo((posGarfo+1)%nFilosofos, this.getID());
 
+					//Se voc pegou um garfo, sai da regi‹o cr’tica
+					this.semaforo.unlock(this.getID());
+
+					//Come
+					this.info("Comendo");
+					Thread.sleep(Math.abs(randint.nextInt()%500));
+
+					//Regi‹o Cr’tica para soltar os garfos
+					this.semaforo.lock(this.getID());
+					this.confereGarfos();
+					this.Garfos.setGarfo(posGarfo, -1); 
+					this.Garfos.setGarfo((posGarfo+1)%nFilosofos, -1);
+					this.semaforo.unlock(this.getID());
+					//Saida da regi‹o cr’tica para soltar os garfos.
+				}
 				else
 				{
-					Garfos[posGarfo] = 0;
-					System.out.println("Thread " + this.getID() + "largou o garfo na pos " + posGarfo);
+					posGarfo++;
+					if (posGarfo == nFilosofos)
+						posGarfo = 0;
 				}
+				//Quem comeu ou n‹o comeu, volta a meditar.
+				this.info("Meditando");
+				Thread.sleep(Math.abs(randint.nextInt()%500));
 				count++;
-			} while (count < 10);
+			}
 		} catch (InterruptedException exc) 
 		{
-			System.out.println("MyThread interrupted.");
+			this.info("Interrompido");
 		}
-		System.out.println("MyThread terminating.");
+		this.info("FIM");
+	}
+	public void info (String s)
+	{
+		System.out.println("Filosofo " + this.getID() + ": " + s);
+	}
+	public void confereGarfos ()
+	{
+		int i = 0;
+		int contador = 0 ;
+		for (i = 0; i< this.Garfos.length() ; i++)
+		{
+			if (this.Garfos.getGarfo(i) != -1) //Quantos garfos estao ocupados?
+			{
+				contador++;
+			}
+		}
+		if (contador <= 4)
+			this.info("Antes de soltar meus garfos, estava OK");
+		else
+		{
+			this.info("Opa, tem um erro aqui");
+			this.imprimeGarfos();
+		}
+	}
+	public void imprimeGarfos ()
+	{
+		int i = 0;
+		for (i = 0; i< this.Garfos.length() ; i++)
+		{
+			this.info(this.Garfos.getGarfo(i) + " ");
+		}
 	}
 }
