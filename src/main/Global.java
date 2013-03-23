@@ -1,11 +1,13 @@
-package pckThread;
+package main;
 
-public class Garfos {
-	public static int[] Garfos;
+public class Global {
 	
-	public Garfos (int nFilosofos)
+	public static int[] Garfos;
+	public static int nThreads = 5;
+	
+	public Global ()
 	{
-		this.Garfos = new int[nFilosofos];
+		this.Garfos = new int[this.nThreads];
 		int i = 0;
 		for (i = 0 ; i< this.Garfos.length ; i++)
 			this.Garfos[i] = -1;
