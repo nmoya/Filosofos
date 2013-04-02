@@ -4,15 +4,13 @@ import java.util.Random;
 import main.Global;
 
 
-public class FilosofosDeadLock implements Runnable 
+public class FilosofosSemDeadlockEInanicao implements Runnable 
 {
 	private int nFilosofos = Global.nThreads;
 	Bakery semaforo = new Bakery(Global.nThreads);
 	private int id;
-	
 
-
-	public FilosofosDeadLock(int id) 
+	public FilosofosSemDeadlockEInanicao(int id) 
 	{
 		this.id = id;
 	}
@@ -21,59 +19,45 @@ public class FilosofosDeadLock implements Runnable
 	{
 		Global.criarFilosofos();
 		Random randint = new Random(42);
+		int count = 0;
 		int posGarfo = this.getID();
 		this.info("iniciado");
 		try 
 		{
-			int count = 0;
 			while(count <= Global.iteracoes)
-			//while(true)
 			{
-				//Quem comeu ou nao comeu, volta a meditar.
+				//Todos comecam meditando
 				//this.info("Meditando");
-				Thread.sleep(Math.abs(randint.nextInt()%500) * Global.aceleradorInvertido);
+				Thread.sleep(Math.abs(randint.nextInt()%500)*Global.aceleradorInvertido);
 				
-				//Regi�o Cr�tica para pegar o garfo a direita
-				
-				/*synchronized (this.Globais) {				}*/
+				//Regiao Critica para pegar os garfos
 				this.semaforo.lock(this.getID());
-				if (Global.getGarfo(posGarfo) == -1)
+				if (Global.getGarfo(posGarfo) == -1 && Global.getGarfo((posGarfo+1)%nFilosofos) == -1)				
 				{
-					Global.setGarfo(posGarfo, this.getID());
-					//this.info("Estou segurando o garfo direito");
-				}	
-				this.semaforo.unlock(this.getID());
-
-				
-				//Regi�o Cr�tica para pegar o garfo a esquerda
-				this.semaforo.lock(this.getID());
-				if (Global.getGarfo((posGarfo+1)%nFilosofos) == -1)
-				{
+					//Pega um garfo para voce
+					Global.setGarfo(posGarfo, this.getID()); 
 					Global.setGarfo((posGarfo+1)%nFilosofos, this.getID());
-					//this.info("Estou segurando o garfo esquerdo");
-				}
-				this.semaforo.unlock(this.getID());
 
-				
-				//Se voc� tem os dois garfos, coma.
-				if (Global.getGarfo(posGarfo) == this.getID() && Global.getGarfo((posGarfo+1)%nFilosofos) == this.getID())
-				{
+					//Se voce pegou um garfo, sai da regi‹o cr’tica
+					this.semaforo.unlock(this.getID());
+
+					//Come
 					this.info("Comendo");
-					Thread.sleep(Math.abs(randint.nextInt()%500) * Global.aceleradorInvertido);
+					Thread.sleep(Math.abs(randint.nextInt()%500)*Global.aceleradorInvertido);
 					Global.fazRefeicao(this.getID());
-					//Regi�o Cr�tica para soltar ambos os garfos
+					
+					//Regi‹o Crítica para soltar os garfos
 					this.semaforo.lock(this.getID());
 					//this.confereGarfos();
 					Global.setGarfo(posGarfo, -1); 
 					Global.setGarfo((posGarfo+1)%nFilosofos, -1);
-					this.info("Parei de comer");
+					this.info("Devolvi meus garfos");
 					this.semaforo.unlock(this.getID());
-					//Saida da regi�o cr�tica para soltar os garfos.
+					//Saida da regi‹o cr’tica para soltar os garfos.
 				}
-
 				count++;
 			}
-			//Global.mostraRefeicoes();
+			Global.mostraRefeicoes();
 		} catch (InterruptedException exc) 
 		{
 			this.info("Interrompido");

@@ -14,40 +14,59 @@ class Begin
 	{
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));  
 		String entrada = null;
-		System.out.println("1- DeadLock");
-		System.out.println("2- Sem DeadLock");
-		System.out.println("3- Sem inanição");
-		System.out.println("4- Sem inanição para N");
-		//entrada = in.readLine();
-		entrada = "2";  
-		System.out.println("Você digitou: " + entrada);  
-		
-		Global G = new Global();
+		String numeroThreads = null;
 		int i = 0;
-		int nThreads = G.nThreads;
-		Thread [] arrFilosofos = new Thread[nThreads];
-		
+
+
+		System.out.println("1- Com DeadLock para N threads");
+		System.out.println("2- Sem Deadlock e sem Inani√ß√£o para N threads. Usando Bakery");
+		System.out.println("3- Sem Deadlock e com Inani√ß√£o para N threads. Usando Sem√°foros JAVA");
+		System.out.println("Digite o algoritmo a ser executado: ");
+		entrada = in.readLine();
+		System.out.println("Voce digitou: " + entrada);  
+
+		System.out.println("Digite o Numero de Threds: ");
+		numeroThreads = in.readLine();
+		Global.nThreads = Integer.valueOf(numeroThreads);			
+
+
+		Thread [] arrFilosofos = new Thread[Global.nThreads];
 		if (entrada.equals("1"))
 		{
+			Global.iteracoes = Global.iteracoes * 100;
 			//Instancia N filosofos
-			for (i = 0 ; i < nThreads ; i ++) 
+			for (i = 0 ; i < Global.nThreads ; i ++) 
 			{
 				FilosofosDeadLock tFilo = new FilosofosDeadLock(i);
 				arrFilosofos[i] = new Thread(tFilo);
 				arrFilosofos[i].start();
 			}
+
 		}
+		//Com o Bakery
 		if (entrada.equals("2"))
 		{
+			Global.aceleradorInvertido = 1;
 			//Instancia N filosofos
-			for (i = 0 ; i < nThreads ; i ++) 
+			for (i = 0 ; i < Global.nThreads ; i ++) 
 			{
-				FilosofosSemDeadlock tFilo = new FilosofosSemDeadlock(i);
+				FilosofosSemDeadlockEInanicao tFilo = new FilosofosSemDeadlockEInanicao(i);
 				arrFilosofos[i] = new Thread(tFilo);
 				arrFilosofos[i].start();
 			}
 		}
-		
-		
+		//Com sem√°foro do java
+		if (entrada.equals("3"))
+		{
+			//Instancia N filosofos
+			for (i = 0 ; i < Global.nThreads ; i ++) 
+			{
+				FilosofosSemaforo tFilo = new FilosofosSemaforo(i);
+				arrFilosofos[i] = new Thread(tFilo);
+				arrFilosofos[i].start();
+			}
+		}
+
+
 	}
 }

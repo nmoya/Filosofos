@@ -3,25 +3,43 @@ package main;
 public class Global {
 	
 	public static int[] Garfos;
+	public static int[] Refeicoes;
 	public static int nThreads = 5;
+	public static int aceleradorInvertido = 0;
+	public static int iteracoes = 1000000;
 	
-	public Global ()
+	public static void criarFilosofos ()
 	{
-		this.Garfos = new int[this.nThreads];
+		Garfos = new int[nThreads];
+		Refeicoes = new int[nThreads];
 		int i = 0;
-		for (i = 0 ; i< this.Garfos.length ; i++)
-			this.Garfos[i] = -1;
+		for (i = 0 ; i< nThreads ; i++)
+		{
+			Garfos[i] = -1;
+			Refeicoes[i] = 0;
+		}
 	}
-	public int getGarfo (int pos)
+	public static int getGarfo (int pos)
 	{
-		return this.Garfos[pos];
+		return Garfos[pos];
 	}
-	public void setGarfo (int pos, int val)
+	public static void setGarfo (int pos, int val)
 	{
-		this.Garfos[pos] = val;
+		Garfos[pos] = val;
 	}
-	public int length()
+	public static int length()
 	{
-		return this.Garfos.length;
+		return Garfos.length;
+	}
+	public static void fazRefeicao (int pos)
+	{
+		Refeicoes[pos]++;
+	}
+	public static void mostraRefeicoes ()
+	{
+		for (int i = 0; i<nThreads; i++) 
+		{
+			System.out.println("Filosofo " + i + " comeu " + Refeicoes[i]);
+		}
 	}
 }
