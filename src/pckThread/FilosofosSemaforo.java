@@ -27,6 +27,8 @@ public class FilosofosSemaforo implements Runnable
 		this.info("iniciado");
 		try 
 		{
+			if (this.getID() % 2 == 0)
+				Thread.sleep(1000);
 			while(count <= Global.iteracoes)
 			{
 				//Todos comecam meditando

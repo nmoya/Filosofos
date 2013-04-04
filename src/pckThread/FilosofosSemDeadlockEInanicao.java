@@ -24,15 +24,17 @@ public class FilosofosSemDeadlockEInanicao implements Runnable
 		this.info("iniciado");
 		try 
 		{
+			if (this.getID() % 2 == 0)
+				Thread.sleep(1000);
 			while(count <= Global.iteracoes)
 			{
 				//Todos comecam meditando
 				//this.info("Meditando");
-				Thread.sleep(Math.abs(randint.nextInt()%500)*Global.aceleradorInvertido);
+				Thread.sleep(Math.abs(randint.nextInt()%1000)*Global.aceleradorInvertido);
 				
 				//Regiao Critica para pegar os garfos
 				this.semaforo.lock(this.getID());
-				if (Global.getGarfo(posGarfo) == -1 && Global.getGarfo((posGarfo+1)%nFilosofos) == -1)				
+				if (Global.getGarfo(posGarfo) == -1 && Global.getGarfo((posGarfo+1)%nFilosofos) == -1)
 				{
 					//Pega um garfo para voce
 					Global.setGarfo(posGarfo, this.getID()); 
@@ -54,6 +56,7 @@ public class FilosofosSemDeadlockEInanicao implements Runnable
 					this.info("Devolvi meus garfos");
 					this.semaforo.unlock(this.getID());
 					//Saida da regi‹o cr’tica para soltar os garfos.
+					
 				}
 				count++;
 			}
