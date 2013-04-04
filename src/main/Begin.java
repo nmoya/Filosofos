@@ -17,10 +17,9 @@ class Begin
 		String numeroThreads = null;
 		int i = 0;
 
-
 		System.out.println("1- Com DeadLock para N threads");
-		System.out.println("2- Sem Deadlock e sem Inanição para N threads. Usando Bakery");
-		System.out.println("3- Sem Deadlock e com Inanição para N threads. Usando Semáforos JAVA");
+		System.out.println("2- Sem Deadlock e sem Inanicao para N threads. Usando Bakery");
+		System.out.println("3- Sem Deadlock e com Inanicao para N threads. Usando Semaforos JAVA");
 		System.out.println("Digite o algoritmo a ser executado: ");
 		entrada = in.readLine();
 		System.out.println("Voce digitou: " + entrada);  
